@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import FastAPI, APIRouter, Depends, HTTPException
 import requests
 from sqlalchemy.orm import Session
 from app.database import SessionLocal, WeatherData
@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from app.auth import get_current_user
 from datetime import datetime
 
-#Load environment variables
+# Load environment variables
 load_dotenv()
 
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
@@ -35,19 +35,18 @@ def get_db():
 def get_current_weather(city: str, db: Session = Depends(get_db), user: dict = Depends(get_current_user)):
     url = f"{BASE_URL}?q={city}&appid={OPENWEATHER_API_KEY}&units=metric"
     response = requests.get(url)
-    
+
     if response.status_code != 200:
         raise HTTPException(status_code=404, detail="City not found")
 
     data = response.json()
 
-        # Extract relevant weather features safely
+    # Extract relevant weather features safely
     temperature = data.get("main", {}).get("temp", None)
     humidity = data.get("main", {}).get("humidity", None)
     pressure = data.get("main", {}).get("pressure", None)
     wind_speed = data.get("wind", {}).get("speed", None)
     rainfall = data.get("rain", {}).get("1h", 0)
-
 
     # Store in database
     weather_entry = WeatherData(
@@ -62,7 +61,7 @@ def get_current_weather(city: str, db: Session = Depends(get_db), user: dict = D
     db.commit()
     db.refresh(weather_entry)
 
-    #Store in CSV
+    # Store in CSV
     save_weather_data_to_csv(city, temperature, humidity, pressure, wind_speed, rainfall, weather_entry.timestamp)
 
     return {
@@ -83,7 +82,7 @@ def save_weather_data_to_csv(city, temperature, humidity, pressure, wind_speed, 
         writer = csv.writer(file)
         if not file_exists:
             writer.writerow(["city", "temperature", "humidity", "pressure", "wind_speed", "rainfall", "timestamp"])  # Header
-        writer.writerow([city, temperature, humidity, pressure, wind_speed, rainfall,timestamp])
+        writer.writerow([city, temperature, humidity, pressure, wind_speed, rainfall, timestamp])
 
 @router.get("/forecast")
 def get_weather_forecast(city: str, db: Session = Depends(get_db)):

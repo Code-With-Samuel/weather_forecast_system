@@ -1,10 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Home</title>
+    <title>Weather Dashboard</title>
 </head>
 <body>
     <h1>Welcome to the Weather Forecast System</h1>
-    <a href="{% url 'login' %}">Login</a> | <a href="{% url 'signup' %}">Sign Up</a>
+
+    {% if user.is_authenticated %}
+        <form method="POST">
+            {% csrf_token %}
+            <label for="city">Enter City:</label>
+            <input type="text" name="city" value="{{ selected_city }}" required>
+            <button type="submit">Get Weather</button>
+        </form>
+
+        <h2>Weather Data for {{ selected_city }}</h2>
+        
+        {% if weather_data %}
+            <p>Temperature: {{ weather_data.temperature }}°C</p>
+            <p>Humidity: {{ weather_data.humidity }}%</p>
+            <p>Pressure: {{ weather_data.pressure }} hPa</p>
+            <p>Wind Speed: {{ weather_data.wind_speed }} m/s</p>
+            <p>Rainfall: {{ weather_data.rainfall }} mm</p>
+        {% else %}
+            <p>No weather data available.</p>
+        {% endif %}
+
+        <h2>3-Day Forecast</h2>
+        {% if forecast_data %}
+            <ul>
+                {% for day in forecast_data %}
+                    <li>{{ day.date }}: {{ day.prediction }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No forecast data available.</p>
+        {% endif %}
+
+        <a href="{% url 'accounts:logout' %}">Logout</a>
+    {% else %}
+        <p>You need to <a href="{% url 'accounts:login' %}">Login</a> to view weather data.</p>
+    {% endif %}
 </body>
 </html>
