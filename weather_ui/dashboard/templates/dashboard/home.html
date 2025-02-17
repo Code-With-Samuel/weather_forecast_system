@@ -29,8 +29,8 @@
         <h2>3-Day Forecast</h2>
         {% if forecast_data %}
             <ul>
-                {% for day in forecast_data %}
-                    <li>{{ day.date }}: {{ day.prediction }}</li>
+                {% for item in forecast_data.forecast %}
+                    <li>{{ item.datetime }} - Temp: {{ item.temperature }}°C, Rain: {{ item.rainfall_prediction }}</li>
                 {% endfor %}
             </ul>
         {% else %}

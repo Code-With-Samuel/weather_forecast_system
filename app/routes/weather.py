@@ -33,6 +33,8 @@ def get_db():
 
 @router.get("/current_weather")
 def get_current_weather(city: str, db: Session = Depends(get_db), user: dict = Depends(get_current_user)):
+    print(f"Received request for current weather of city: {city}")
+    
     url = f"{BASE_URL}?q={city}&appid={OPENWEATHER_API_KEY}&units=metric"
     response = requests.get(url)
 
@@ -86,6 +88,8 @@ def save_weather_data_to_csv(city, temperature, humidity, pressure, wind_speed, 
 
 @router.get("/forecast")
 def get_weather_forecast(city: str, db: Session = Depends(get_db)):
+    print(f"Received request for forecast of city: {city}")
+
     url = f"{FORECAST_URL}?q={city}&appid={OPENWEATHER_API_KEY}&units=metric"
     response = requests.get(url)
 
