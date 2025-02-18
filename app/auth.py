@@ -80,7 +80,10 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid username or password")
     
-    access_token = create_access_token(data={"sub": form_data.username}, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    access_token = create_access_token(
+        data={"sub": form_data.username}, 
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
     
     return {"access_token": access_token, "token_type": "bearer"}
 

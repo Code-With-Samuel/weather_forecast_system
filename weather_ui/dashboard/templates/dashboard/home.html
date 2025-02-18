@@ -17,6 +17,7 @@
         <h2>Weather Data for {{ selected_city }}</h2>
         
         {% if weather_data %}
+            <h3>Current Weather for {{city}}</h3>
             <p>Temperature: {{ weather_data.temperature }}°C</p>
             <p>Humidity: {{ weather_data.humidity }}%</p>
             <p>Pressure: {{ weather_data.pressure }} hPa</p>
